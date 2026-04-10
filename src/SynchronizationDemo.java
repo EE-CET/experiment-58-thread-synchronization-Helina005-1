@@ -1,34 +1,53 @@
+
+
+
+
+// Shared resource class
 class Table {
-    // TODO: synchronized method void printTable(int n)
-    // Loop from 1 to 5 (as per sample) or 10
-    // Print n * i + " "
-    // Handle InterruptedException (try-catch Thread.sleep(400))
+    // The synchronized keyword ensures no two threads can execute this method simultaneously on the same object
+    synchronized void printTable(int n) {
+        for (int i = 1; i <= 5; i++) {
+            // Print the multiples space-separated
+            if (i == 5) {
+                System.out.print(n * i); // No trailing space for the last number
+            } else {
+                System.out.print((n * i) + " ");
+            }
+        }
+        // Move to the next line after the table is complete
+        System.out.println();
+    }
 }
 
-class MyThread1 extends Thread {
+// Thread class
+class MyThread extends Thread {
     Table t;
-    MyThread1(Table t) {
-        this.t = t;
-    }
-    public void run() {
-        // TODO: Call t.printTable(5)
-    }
-}
+    int n;
 
-class MyThread2 extends Thread {
-    Table t;
-    MyThread2(Table t) {
+    // Constructor to pass the shared Table object and the number to print
+    MyThread(Table t, int n) {
         this.t = t;
+        this.n = n;
     }
+
+    @Override
     public void run() {
-        // TODO: Call t.printTable(100)
+        t.printTable(n);
     }
 }
 
 public class SynchronizationDemo {
     public static void main(String[] args) {
-        // TODO: Create Table object
-        // TODO: Create MyThread1 and MyThread2 objects passing the table object
-        // TODO: Start both threads
+        // Create the single shared Table object
+        Table obj = new Table();
+
+        // Create two threads, sharing the SAME Table object
+        MyThread t1 = new MyThread(obj, 5);
+        MyThread t2 = new MyThread(obj, 100);
+
+        // Start both threads
+        // Because printTable is synchronized, their outputs won't interleave
+        t1.start();
+        t2.start();
     }
 }
